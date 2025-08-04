@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindfulMoments</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f4f8; padding: 20px; text-align: center; }
+    button { padding: 1rem 2rem; font-size: 1rem; border: none; border-radius: 8px; background: #667eea; color: white; }
+  </style>
+</head>
+<body>
+  <h1>MindfulMoments</h1>
+  <p>Your AI-guided micro-activity coach</p>
+  <button onclick="startSession()">Start 5-Minute Meditation</button>
+  <p id="status"></p>
+  <script>
+    async function startSession() {
+      document.getElementById('status').textContent = "Loading...";
+      const specKey = "meditation_5";
+      let cached = localStorage.getItem(specKey);
+      if (cached) {
+        document.getElementById('status').textContent = "Using cached plan: " + cached;
+        return;
+      }
+      try {
+        const res = await fetch('/api/orchestrate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ type: "meditation", duration: 5 })
+        });
+        const data = await res.json();
+        localStorage.setItem(specKey, data.plan || "Simple Breathing Exercise");
+        document.getElementById('status').textContent = "Plan: " + data.plan;
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(data.plan);
+          speechSynthesis.speak(utterance);
+        }
+      } catch (e) {
+        document.getElementById('status').textContent = "Offline fallback: Breathe deeply for 5 minutes.";
+      }
+    }
+  </script>
+</body>
+</html>
