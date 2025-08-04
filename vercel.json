@@ -1,8 +1,0 @@
-
-{
-  "functions": {
-    "api/orchestrate.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
