@@ -1,0 +1,1 @@
+document.body.insertAdjacentHTML('beforeend', '<p>App is loaded and ready to go!</p>');
